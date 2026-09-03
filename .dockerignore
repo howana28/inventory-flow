@@ -1,0 +1,13 @@
+.git
+.gitignore
+**/__pycache__
+**/*.pyc
+backend/.venv
+backend/.env
+backend/inventoryflow.db
+backend/static
+frontend/node_modules
+frontend/.next
+frontend/out
+.pytest_cache
+*.zip

@@ -1,0 +1,15 @@
+services:
+  app:
+    build: .
+    ports:
+      - "10000:10000"
+    environment:
+      APP_ENV: development
+      DATABASE_URL: sqlite:////data/inventoryflow.db
+      ERP_PROVIDER: demo
+      ALLOW_EXTERNAL_CONNECTIONS: "false"
+      COOKIE_SECURE: "false"
+    volumes:
+      - inventoryflow_data:/data
+volumes:
+  inventoryflow_data:

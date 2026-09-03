@@ -1,0 +1,16 @@
+services:
+  - type: web
+    name: inventoryflow-demo
+    runtime: docker
+    plan: free
+    autoDeploy: true
+    healthCheckPath: /api/v1/health
+    envVars:
+      - key: APP_ENV
+        value: production
+      - key: COOKIE_SECURE
+        value: "true"
+      - key: ERP_PROVIDER
+        value: demo
+      - key: ALLOW_EXTERNAL_CONNECTIONS
+        value: "false"

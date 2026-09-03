@@ -1,0 +1,25 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+.pytest_cache/
+backend/inventoryflow.db
+inventoryflow.db
+
+# Environment / credentials
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Frontend
+frontend/node_modules/
+frontend/.next/
+frontend/out/
+
+# Generated runtime
+backend/static/
+*.xlsx
+.DS_Store
+Thumbs.db
