@@ -1,5 +1,7 @@
 # Inventory Flow
 
+Acesse a aplicação: https://inventoryflow-demo.onrender.com
+
 **Plataforma multioperador para contagem, validação e reconciliação de inventário físico.**
 
 Inventory Flow é uma aplicação full stack desenvolvida para operações de inventário físico e demonstração em portfólio. O sistema reúne snapshot de catálogo, bipagem por SKU/EAN, controle de concorrência entre operadores, validação de divergências, filas de recontagem, histórico de auditoria, controle de acesso por perfil, exportação para Excel e uma camada de integração com ERP.
