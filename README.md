@@ -1,103 +1,109 @@
-# InventoryFlow
+# Inventory Flow
 
-**Multi-user warehouse inventory reconciliation platform.**
+**Plataforma multioperador para contagem, validação e reconciliação de inventário físico.**
 
-InventoryFlow is a portfolio-ready full-stack application for physical inventory operations. It demonstrates catalog snapshots, barcode/SKU counting, concurrent operator locks, validation, recount queues, audit history, role-based access, Excel exports and an ERP integration layer.
+Inventory Flow é uma aplicação full stack desenvolvida para operações de inventário físico e demonstração em portfólio. O sistema reúne snapshot de catálogo, bipagem por SKU/EAN, controle de concorrência entre operadores, validação de divergências, filas de recontagem, histórico de auditoria, controle de acesso por perfil, exportação para Excel e uma camada de integração com ERP.
 
-This repository contains **only synthetic demo data**. No company names, private catalogs, real stock quantities, user data, production URLs or credentials are included.
+> Este repositório utiliza exclusivamente dados sintéticos de demonstração. Nenhum nome de empresa, catálogo privado, quantidade real de estoque, dado de usuário, URL de produção ou credencial está incluído.
 
-## Why this project exists
+## Por que este projeto existe
 
-Spreadsheet-driven inventories become fragile when multiple people count at once. Operators can duplicate work, overwrite each other, lose track of locations, and create ambiguous recounts. InventoryFlow turns the process into a controlled workflow with explicit ownership and deterministic reconciliation.
+Inventários controlados por planilhas se tornam frágeis quando várias pessoas contam ao mesmo tempo. Operadores podem duplicar trabalho, sobrescrever informações, perder o controle das ruas já conferidas e gerar recontagens ambíguas.
+
+O Inventory Flow transforma esse processo em um fluxo operacional controlado, com responsáveis definidos, bloqueios concorrentes e reconciliação determinística.
 
 ```text
-Catalog sync
-    ↓
-Immutable snapshot
-    ↓
-Multi-user zone counting
-    ↓
-Validation
-    ↓
-Difference = Physical Count - System Snapshot
-    ↓
-OK / SHORTAGE / SURPLUS
-    ↓
-Optional recount by reserved SKU
-    ↓
-Final resolution + audit history
+Sincronização do catálogo
+        ↓
+Snapshot imutável
+        ↓
+Contagem multioperador por rua
+        ↓
+Validação
+        ↓
+Diferença = Contagem Física - Estoque do Sistema
+        ↓
+OK / FALTA / SOBRA
+        ↓
+Recontagem opcional com SKU reservado
+        ↓
+Resolução final + histórico de auditoria
 ```
 
-## Tech stack
+## Stack tecnológica
 
 - **Frontend:** Next.js 16, React 19, TypeScript
 - **Backend:** FastAPI, Python 3.12
-- **Persistence:** SQLAlchemy; SQLite for zero-config demo, PostgreSQL/Supabase-compatible URL for hosted environments
-- **Authentication:** opaque server-side sessions with HttpOnly cookies
-- **Authorization:** backend-enforced RBAC permissions
-- **ERP layer:** synthetic Demo Provider + optional Bling OAuth 2.0 provider
-- **Exports:** OpenPyXL
-- **Deployment:** Docker, single service / single public URL
+- **Persistência:** SQLAlchemy; SQLite para demonstração sem configuração e URL compatível com PostgreSQL/Supabase para ambientes hospedados
+- **Autenticação:** sessões opacas gerenciadas no servidor com cookies HttpOnly
+- **Autorização:** permissões RBAC validadas no backend
+- **Camada ERP:** provedor sintético de demonstração + provedor opcional Bling via OAuth 2.0
+- **Exportações:** OpenPyXL
+- **Deploy:** Docker, serviço único e uma única URL pública
 
-## Main features
+## Principais recursos
 
-- Responsive dashboard with inventory progress.
-- Immutable inventory snapshot before counting begins.
-- Zone-based physical counting by SKU or EAN.
-- Multi-operator reservation locks with heartbeat and TTL.
-- F5-safe active zone and recount session restoration.
-- Deterministic validation: `counted - system snapshot`.
-- Divergence classification as shortage or surplus.
-- Recount queue with one SKU reserved to one browser session at a time.
-- Optional "Next item" workflow; no automatic loop.
-- Manual divergence approval for supervised exceptions.
-- Audit trail and historical inventory inspection.
-- Excel validation export.
-- User and permission administration.
-- Admin-only Integrations module with safe database metadata, ERP status, sync metrics and sync history.
-- Demo scenarios that jump directly to Counting, Validation or Recount states.
-- Bling OAuth 2.0 implementation kept separate from the public demo provider.
+- Visão geral responsiva com progresso do inventário.
+- Snapshot imutável do inventário antes do início da contagem.
+- Bipagem física por rua usando SKU ou EAN.
+- Reserva multioperador com heartbeat e TTL.
+- Restauração da rua ativa e da sessão de recontagem após F5.
+- Validação determinística: `contagem física - snapshot do sistema`.
+- Classificação automática das divergências como falta ou sobra.
+- Fila de recontagem com um SKU reservado para uma única sessão de navegador por vez.
+- Fluxo opcional de **Próximo item**, sem loop automático.
+- Aprovação manual de divergências para exceções supervisionadas.
+- Trilha de auditoria e consulta ao histórico de inventários.
+- Exportação da validação para Excel.
+- Administração de usuários e permissões.
+- Módulo de **Integrações** exclusivo para administradores, com metadados seguros do banco de dados, status do ERP, métricas e histórico de sincronização.
+- Cenários de demonstração que levam diretamente aos estados de Bipagem, Validação ou Recontagem.
+- Implementação OAuth 2.0 do Bling mantida separada do provedor público de demonstração.
 
-## Demo accounts
+## Contas de demonstração
 
-The application seeds these fictional users on first start:
+Na primeira inicialização, a aplicação cria estes usuários fictícios:
 
-| Profile | E-mail | Password |
+| Perfil | E-mail | Senha |
 | --- | --- | --- |
-| Administrator | `admin@inventoryflow.demo` | `Demo123!` |
+| Administrador | `admin@inventoryflow.demo` | `Demo123!` |
 | Supervisor | `supervisor@inventoryflow.demo` | `Demo123!` |
-| Operator | `operator@inventoryflow.demo` | `Demo123!` |
+| Operador | `operator@inventoryflow.demo` | `Demo123!` |
 
-The public demo should keep `ALLOW_EXTERNAL_CONNECTIONS=false`.
+Para a demonstração pública, mantenha:
 
-## Permissions
+```env
+ALLOW_EXTERNAL_CONNECTIONS=false
+```
 
-| Module | Operator | Supervisor | Admin |
+## Permissões
+
+| Módulo | Operador | Supervisor | Administrador |
 | --- | :---: | :---: | :---: |
-| Dashboard | ✓ | ✓ | ✓ |
-| Prepare inventory |  | ✓ | ✓ |
-| Counting | ✓ | ✓ | ✓ |
-| Validation |  | ✓ | ✓ |
-| Recount | ✓ | ✓ | ✓ |
-| History |  | ✓ | ✓ |
-| Users |  |  | ✓ |
-| Integrations |  |  | ✓ |
+| Visão geral | ✓ | ✓ | ✓ |
+| Preparar inventário |  | ✓ | ✓ |
+| Bipagem | ✓ | ✓ | ✓ |
+| Validação |  | ✓ | ✓ |
+| Recontagem | ✓ | ✓ | ✓ |
+| Histórico |  | ✓ | ✓ |
+| Usuários |  |  | ✓ |
+| Integrações |  |  | ✓ |
 
-Permissions are stored per user and checked in FastAPI dependencies. Hiding a menu item in the frontend is not treated as an authorization boundary.
+As permissões são armazenadas por usuário e verificadas por dependências do FastAPI. Ocultar uma opção de menu no frontend não é considerado uma barreira de autorização.
 
-## Demo dataset
+## Base de demonstração
 
-The seed generator creates 420 fictional products distributed across 18 warehouse zones. Product names, brands, EAN-like identifiers, locations and quantities are deterministic synthetic values generated at runtime.
+O gerador de seed cria **420 produtos fictícios distribuídos em 18 ruas de estoque**. Nomes de produtos, marcas, identificadores semelhantes a EAN, localizações e quantidades são valores sintéticos e determinísticos gerados em tempo de execução.
 
-The **Integrations** screen includes three scenario buttons:
+A tela **Integrações** oferece três cenários:
 
-- **Counting:** several zones are already finalized and the remaining zones can be reserved and counted.
-- **Validation:** all zones are finalized and the snapshot contains deliberate shortages/surpluses.
-- **Recount:** selected divergent SKUs are already placed in the multi-operator recount queue.
+- **Bipagem:** várias ruas já estão finalizadas e as restantes podem ser reservadas e contadas.
+- **Validação:** todas as ruas estão finalizadas e o snapshot contém faltas e sobras deliberadas.
+- **Recontagem:** SKUs divergentes selecionados já estão inseridos na fila de recontagem multioperador.
 
-This makes the application easy to demonstrate without manually completing hundreds of scans.
+Isso permite demonstrar o sistema sem precisar concluir manualmente centenas de bipagens.
 
-## Local setup — Windows PowerShell
+## Configuração local — Windows PowerShell
 
 ### 1. Backend
 
@@ -110,11 +116,11 @@ pip install -r requirements.txt
 Copy-Item .env.example .env
 ```
 
-The default database is SQLite and needs no external setup.
+O banco de dados padrão é SQLite e não exige configuração externa.
 
 ### 2. Frontend
 
-Open another terminal:
+Abra outro terminal:
 
 ```powershell
 cd frontend
@@ -122,14 +128,14 @@ npm install
 npm run build
 ```
 
-Copy the static export to FastAPI:
+Copie a exportação estática para o FastAPI:
 
 ```powershell
 Remove-Item -Recurse -Force ..\backend\static -ErrorAction SilentlyContinue
 Copy-Item -Recurse .\out ..\backend\static
 ```
 
-### 3. Run
+### 3. Executar
 
 ```powershell
 cd ..\backend
@@ -137,36 +143,44 @@ cd ..\backend
 python -m uvicorn app.main:app --host 127.0.0.1 --port 10000 --reload
 ```
 
-Open `http://127.0.0.1:10000`.
+Abra:
 
-API documentation is available at `http://127.0.0.1:10000/api/docs`.
+```text
+http://127.0.0.1:10000
+```
 
-## PostgreSQL / Supabase-compatible database
+A documentação da API está disponível em:
 
-Change only the environment variable:
+```text
+http://127.0.0.1:10000/api/docs
+```
+
+## Banco PostgreSQL / compatível com Supabase
+
+Altere apenas a variável de ambiente:
 
 ```env
 DATABASE_URL=postgresql+psycopg://USER:PASSWORD@HOST:5432/postgres
 ```
 
-The application creates its tables on startup. `database/schema.sql` is included as a readable reference for the core schema.
+A aplicação cria as tabelas na inicialização. O arquivo `database/schema.sql` está incluído como referência legível do schema principal.
 
-## ERP providers
+## Provedores ERP
 
-### Demo Provider
+### Provedor de demonstração
 
-Default configuration:
+Configuração padrão:
 
 ```env
 ERP_PROVIDER=demo
 ALLOW_EXTERNAL_CONNECTIONS=false
 ```
 
-It loads the synthetic product catalog and is safe for a public portfolio deployment.
+Esse provedor carrega o catálogo sintético de produtos e é seguro para um deploy público de portfólio.
 
-### Bling Provider
+### Provedor Bling
 
-The Bling adapter is optional and no real credential is stored in this repository.
+O adaptador do Bling é opcional e nenhuma credencial real é armazenada neste repositório.
 
 ```env
 ERP_PROVIDER=demo
@@ -177,44 +191,46 @@ BLING_REDIRECT_URI=http://127.0.0.1:10000/api/v1/integrations/bling/callback
 TOKEN_ENCRYPTION_KEY=
 ```
 
-Generate a Fernet key:
+Para gerar uma chave Fernet:
 
 ```powershell
 python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"
 ```
 
-When configured, the Integrations page can start the OAuth flow. Access/refresh tokens are encrypted before being persisted. For a public demo, leave external connections disabled.
+Quando configurada, a tela **Integrações** pode iniciar o fluxo OAuth. Os tokens de acesso e renovação são criptografados antes de serem persistidos.
 
-## Concurrency model
+Para uma demonstração pública, mantenha as conexões externas desativadas.
 
-A generic `resource_locks` table protects operational work:
+## Modelo de concorrência
+
+A tabela genérica `resource_locks` protege o trabalho operacional:
 
 ```text
-COUNTING
-inventory + zone + user + browser session + expires_at
+BIPAGEM
+inventário + rua + usuário + sessão do navegador + expires_at
 
-RECOUNT
-inventory + SKU + user + browser session + expires_at
+RECONTAGEM
+inventário + SKU + usuário + sessão do navegador + expires_at
 ```
 
-The same browser session can renew its own lock after F5. A different operator/session receives HTTP `409` until the lock is explicitly released or expires after inactivity.
+A mesma sessão de navegador pode renovar o próprio bloqueio após um F5. Outro operador ou outra sessão recebe HTTP `409` até que a reserva seja liberada explicitamente ou expire por inatividade.
 
-## Security highlights
+## Destaques de segurança
 
-- PBKDF2-HMAC-SHA256 password hashing with per-user salts.
-- Opaque authentication sessions persisted server-side.
-- HttpOnly and SameSite session cookies.
-- Backend permission checks on every protected route.
-- No ERP secret or database password returned to the browser.
-- External OAuth disabled by default in demo environments.
-- Fernet-encrypted external OAuth tokens when enabled.
-- Repository verification script checks for private-brand references and credential patterns.
+- Hash de senhas com PBKDF2-HMAC-SHA256 e salt individual por usuário.
+- Sessões de autenticação opacas persistidas no servidor.
+- Cookies de sessão HttpOnly e SameSite.
+- Verificação de permissões no backend em todas as rotas protegidas.
+- Nenhum segredo de ERP ou senha de banco de dados é retornado ao navegador.
+- OAuth externo desativado por padrão em ambientes de demonstração.
+- Tokens OAuth externos criptografados com Fernet quando a integração está habilitada.
+- Script de verificação do repositório procura referências a marcas privadas e padrões de credenciais.
 
-See [`docs/security.md`](docs/security.md) for more.
+Consulte [`docs/security.md`](docs/security.md) para mais detalhes.
 
-## Tests
+## Testes
 
-From the project root, with backend dependencies installed:
+Na raiz do projeto, com as dependências do backend instaladas:
 
 ```powershell
 $env:PYTHONPATH="backend"
@@ -222,15 +238,15 @@ pytest -q
 python scripts\verify_portfolio.py
 ```
 
-The integration tests cover:
+Os testes de integração cobrem:
 
-- reconciliation formula;
-- synthetic seed and dashboard;
-- validation scenario;
-- zone lock idempotency after reload;
-- collision prevention between operators;
-- recount reservation by SKU;
-- divergent recount returning to Validation.
+- fórmula de reconciliação;
+- geração do seed sintético e visão geral;
+- cenário de validação;
+- idempotência da reserva de rua após recarregar a página;
+- prevenção de colisão entre operadores;
+- reserva de recontagem por SKU;
+- retorno de uma recontagem ainda divergente para Validação.
 
 ## Docker
 
@@ -239,7 +255,7 @@ docker build -t inventoryflow .
 docker run --rm -p 10000:10000 inventoryflow
 ```
 
-Or:
+Ou:
 
 ```bash
 docker compose up --build
@@ -247,11 +263,11 @@ docker compose up --build
 
 ## Render
 
-`render.yaml` is included for a one-service Docker deployment. The built Next.js frontend is copied into the FastAPI image, so the demo uses a single public URL.
+O arquivo `render.yaml` está incluído para um deploy Docker em serviço único. O frontend Next.js compilado é copiado para a imagem do FastAPI, permitindo que a demonstração utilize uma única URL pública.
 
-For a portfolio demo, the built-in SQLite database is acceptable because the synthetic state can be recreated. For persistent hosted history, configure a PostgreSQL `DATABASE_URL` in the hosting environment.
+Para uma demonstração de portfólio, o SQLite embutido é suficiente porque o estado sintético pode ser recriado. Para histórico persistente em ambiente hospedado, configure uma `DATABASE_URL` PostgreSQL no serviço de hospedagem.
 
-## Project structure
+## Estrutura do projeto
 
 ```text
 inventoryflow/
@@ -277,12 +293,14 @@ inventoryflow/
 └── README.md
 ```
 
-## Design decisions
+## Decisões de arquitetura
 
-The portfolio edition intentionally removes company-specific operational adjustments. Its core reconciliation is universal: a snapshot of system stock is compared against a physical count. Domain-specific stock adjustments can be added later as independent policies without changing the counting and concurrency engines.
+A edição de portfólio remove intencionalmente ajustes operacionais específicos de uma empresa. A reconciliação principal é universal: um snapshot do estoque do sistema é comparado com a contagem física.
 
-ERP access is abstracted behind a provider layer. The public application remains fully demonstrable without any third-party account, while the codebase still demonstrates OAuth-based integration with a real ERP.
+Ajustes específicos de domínio podem ser adicionados posteriormente como políticas independentes, sem alterar os mecanismos de bipagem, concorrência e recontagem.
 
-## License
+O acesso ao ERP é abstraído por uma camada de provedores. A aplicação pública continua totalmente demonstrável sem qualquer conta de terceiros, enquanto a base de código preserva uma integração OAuth com um ERP real.
 
-This portfolio project is provided for demonstration and educational review. Add the license that matches your intended public repository policy before publishing.
+## Licença
+
+Este projeto foi desenvolvido para demonstração técnica, portfólio e avaliação educacional. O uso, reprodução ou distribuição deve respeitar a licença definida para este repositório.
